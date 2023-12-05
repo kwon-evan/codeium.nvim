@@ -21,9 +21,15 @@ local function codeium_to_cmp(comp, offset, right)
 
 	-- We get the completion part that has the largest offset
 	local max_offset = offset
+
 	if comp.completionParts then
 		for _, v in pairs(comp.completionParts) do
 			local part_offset = tonumber(v.offset)
+
+			if part_offset == nil then
+				part_offset = 0
+			end
+
 			if part_offset > max_offset then
 				max_offset = part_offset
 			end
@@ -31,7 +37,13 @@ local function codeium_to_cmp(comp, offset, right)
 	end
 
 	-- We get where the suffix difference between the completion and the range of code
-	local suffix_diff = comp.range.endOffset - max_offset
+	local end_offset = comp.range.endOffset
+
+	if end_offset == nil then
+		end_offset = 0
+	end
+
+	local suffix_diff = end_offset - max_offset
 
 	local range = {
 		start = {
